@@ -2,16 +2,11 @@ name: Wind Alert
 
 on:
   schedule:
-    # Runs every 3 hours (UTC). Adjust the cron if you want more/less frequent checks.
-    # Cron format: minute hour day month weekday
-    # Examples:
-    #   '0 * * * *'    → every hour
-    #   '0 */3 * * *'  → every 3 hours  ← current setting
-    #   '0 */6 * * *'  → every 6 hours
-    - cron: '0 */3 * * *'
-
-  # Lets you trigger a manual check from the GitHub Actions tab at any time
+    - cron: '0 */3 * * *'   # every 3 hours UTC
   workflow_dispatch:
+
+permissions:
+  contents: write            # needed to save last_alert_hash.txt
 
 jobs:
   check-wind:
@@ -31,7 +26,8 @@ jobs:
 
       - name: Run wind check
         env:
-          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_USER:         ${{ secrets.GMAIL_USER }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
-          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}   # optional — defaults to GMAIL_USER
+          RECIPIENT_EMAIL:    ${{ secrets.RECIPIENT_EMAIL }}
+          GITHUB_TOKEN:       ${{ secrets.GITHUB_TOKEN }}
         run: python check_wind.py
